@@ -1,0 +1,21 @@
+{
+  "name": "@derogab/llm-proxy",
+  "description": "Simple LLM Proxy for seamless API integration",
+  "version": "0.1.0",
+  "author": "derogab",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "LLM",
+    "proxy",
+    "gateway"
+  ],
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "typescript": "5.9.2"
+  }
+}
