@@ -26,7 +26,7 @@ dotenv.config();
  */
 async function generate_openai(messages: ChatCompletionMessageParam[]): Promise<ChatCompletionMessageParam> {
   // Create a new instance of the OpenAI class.
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL: process.env.OPENAI_BASE_URL });
   // Call the OpenAI API.
   const chatCompletion = await openai.chat.completions.create({
     messages: messages,
