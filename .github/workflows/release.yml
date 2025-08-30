@@ -117,5 +117,5 @@ jobs:
         run: npm pack --dry-run
       - name: Publish to npm (with provenance)
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
         run: npm publish --provenance --access public
