@@ -24,9 +24,9 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="v${tag#v}" \
               --generate-notes
-  # Publish the package to NPM.
-  publish:
-    name: Publish Package
+  # Publish the package.
+  publish-npm:
+    name: Publish Package on NPM
     needs: release
     runs-on: ubuntu-latest
     permissions:
@@ -71,4 +71,51 @@ jobs:
       - name: Publish to npm (with provenance)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public
+  publish-github:
+    name: Publish Package on GitHub
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          registry-url: 'https://npm.pkg.github.com'
+          always-auth: true
+      - name: Install dependencies (clean)
+        run: npm ci
+      - name: Type check
+        run: npx tsc -p tsconfig.json --noEmit
+      - name: Run tests
+        run: npm test --if-present
+      - name: Build
+        run: |
+          if npm run | grep -q "build"; then
+            npm run build
+          else
+            # Fall back to a standard TS build if no script is defined
+            npx tsc -p tsconfig.json
+          fi
+      - name: Verify tag matches package.json version
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"   # supports tags like v1.2.3
+          echo "package.json: $PKG_VERSION"
+          echo "release tag:   $TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "Release tag ($TAG_VERSION) does not match package.json version ($PKG_VERSION)."
+            exit 1
+          fi
+      - name: Show publish contents (dry run)
+        run: npm pack --dry-run
+      - name: Publish to npm (with provenance)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm publish --provenance --access public
