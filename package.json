@@ -1,6 +1,6 @@
 {
   "name": "@derogab/llm-proxy",
-  "description": "Simple LLM Proxy for seamless API integration",
+  "description": "A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, and Cloudflare AI",
   "version": "0.2.0",
   "author": "derogab",
   "license": "MIT",
