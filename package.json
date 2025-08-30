@@ -4,6 +4,10 @@
   "version": "0.1.0",
   "author": "derogab",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/derogab/llm-proxy.git"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
