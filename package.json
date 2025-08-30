@@ -1,7 +1,7 @@
 {
   "name": "@derogab/llm-proxy",
   "description": "Simple LLM Proxy for seamless API integration",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "derogab",
   "license": "MIT",
   "repository": {
