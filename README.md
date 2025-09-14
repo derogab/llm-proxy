@@ -1,9 +1,9 @@
 # llm-proxy
-A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, and Cloudflare AI.
+A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, Cloudflare AI, and Llama.cpp.
 
 ## Features
 
-- **Multi-provider support**: Switch between OpenAI, Ollama, and Cloudflare AI with environment variables.
+- **Multi-provider support**: Switch between OpenAI, Ollama, Cloudflare AI, and Llama.cpp with environment variables.
 - **TypeScript support**: Full TypeScript definitions included.
 - **Simple API**: Single function interface for all providers.
 - **Automatic provider detection**: Automatically selects the best available provider based on environment variables.
@@ -34,22 +34,27 @@ Configure one or more providers:
 
 ### OpenAI
 ```bash
-OPENAI_API_KEY=your_openai_api_key
+OPENAI_API_KEY=your_openai_api_key # Required
 OPENAI_BASE_URL=https://api.openai.com/v1 # Optional
 OPENAI_MODEL=gpt-4o-mini                  # Optional, defaults to gpt-4o-mini
 ```
 
 ### Cloudflare AI
 ```bash
-CLOUDFLARE_ACCOUNT_ID=your_account_id
-CLOUDFLARE_AUTH_KEY=your_auth_key
-CLOUDFLARE_MODEL=your_model_name
+CLOUDFLARE_ACCOUNT_ID=your_account_id # Required
+CLOUDFLARE_AUTH_KEY=your_auth_key # Required
+CLOUDFLARE_MODEL=your_model_name # Required
 ```
 
 ### Ollama (Local)
 ```bash
 OLLAMA_URI=http://localhost:11434 # Optional, defaults to http://localhost:11434
 OLLAMA_MODEL=llama3.1             # Optional, defaults to llama3.1
+```
+
+### Llama.cpp (Local)
+```bash
+LLAMA_CPP_MODEL_PATH=/path/to/your/model.gguf # Required, path to your GGUF model file
 ```
 
 ## API Reference
@@ -78,6 +83,7 @@ The package selects providers in the following order:
 1. **OpenAI** (if `OPENAI_API_KEY` is set)
 2. **Cloudflare AI** (if `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AUTH_KEY`, and `CLOUDFLARE_MODEL` are set)
 3. **Ollama** (if `OLLAMA_URI` is set)
+4. **Llama.cpp** (if `LLAMA_CPP_MODEL_PATH` is set)
 
 If no providers are configured, the function throws an error.
 
