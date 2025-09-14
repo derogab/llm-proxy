@@ -1,11 +1,13 @@
 // Dependencies.
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { getLlama, LlamaChatSession } from "node-llama-cpp";
 import { Ollama } from 'ollama';
 import OpenAI from 'openai';
 
 // Types.
 import type { ChatCompletionMessageParam } from 'openai/resources';
+import type { ChatHistoryItem } from 'node-llama-cpp';
 import type { Message } from 'ollama';
 
 export type CloudflareMessage = {
@@ -55,6 +57,67 @@ async function generate_ollama(messages: Message[]): Promise<Message> {
 }
 
 /**
+ * Convert messages to chat history.
+ * 
+ * Llama.cpp expects the chat history in a custom format.
+ * Convert the default messages format to the Llama.cpp format.
+ * 
+ * @param messages the messages to be sent to Llama.cpp.
+ * @returns the same messages in the Llama.cpp format.
+ */
+function convert_messages_to_chat_history(messages: Message[]): ChatHistoryItem[] {
+  // Init chat history.
+  const chat_history: ChatHistoryItem[] = [];
+  // Loop through messages.
+  for (const message of messages) {
+    if (message.role === 'system' || message.role === 'user') {
+      chat_history.push({
+        type: message.role,
+        text: message.content
+      });
+    } else if (message.role === 'assistant') {
+      chat_history.push({
+        type: "model",
+        response: [message.content]
+      });
+    }
+  }
+  // Return the chat history.
+  return chat_history;
+}
+
+/**
+ * Generate a response using Llama.cpp Local Model.
+ * 
+ * @param messages the messages to be sent to Llama.cpp.
+ * @returns the response string.
+ */
+async function generate_llama_cpp(messages: Message[]): Promise<Message> {
+  // Create a new instance of the Llama.cpp class.
+  const llama = await getLlama();
+  // Set model to use.
+  const modelPath = process.env.LLAMA_CPP_MODEL_PATH;
+  if (!modelPath) {
+    throw new Error('LLAMA_CPP_MODEL_PATH is not set.');
+  }
+  const model = await llama.loadModel({
+    modelPath: modelPath,
+  });
+  // Import history into the context.
+  const context = await model.createContext();
+  const session = new LlamaChatSession({
+    contextSequence: context.getSequence()
+  });
+  if (messages.length > 1) session.setChatHistory(convert_messages_to_chat_history(messages.slice(0, -1)));
+
+  // Generate and return the response.
+  return {
+    role: 'assistant',
+    content: await session.prompt(messages[messages.length - 1]?.content || ''),
+  };
+}
+
+/**
  * Generate a response using Cloudflare AI API.
  * 
  * @param messages the messages to be sent to Cloudflare AI.
@@ -100,6 +163,10 @@ export async function generate(messages: MessageInputParam[]): Promise<MessageIn
   } else if (process.env.OLLAMA_URI) {
     // If ollama is available, use ollama.
     return await generate_ollama(messages as Message[]);
+
+  } else if (process.env.LLAMA_CPP_MODEL_PATH) {
+    // If llama_cpp is available, use llama_cpp.
+    return await generate_llama_cpp(messages as Message[]);
 
   } else {
     // Throw an error if no LLM is available.
