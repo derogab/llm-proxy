@@ -1,19 +1,37 @@
 {
   "name": "@derogab/llm-proxy",
   "description": "A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, and Cloudflare AI",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "derogab",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/derogab/llm-proxy.git"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "type": "module",
-  "scripts": {
-    "build": "tsc"
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
   },
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:types": "tsc -p tsconfig.types.json"
+  },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "LLM",
     "proxy",
