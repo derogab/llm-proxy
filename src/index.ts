@@ -1,13 +1,11 @@
 // Dependencies.
 import axios from 'axios';
 import * as dotenv from 'dotenv';
-import { getLlama, LlamaChatSession } from "node-llama-cpp";
 import { Ollama } from 'ollama';
 import OpenAI from 'openai';
 
 // Types.
 import type { ChatCompletionMessageParam } from 'openai/resources';
-import type { ChatHistoryItem } from 'node-llama-cpp';
 import type { Message } from 'ollama';
 
 export type CloudflareMessage = {
@@ -65,9 +63,9 @@ async function generate_ollama(messages: Message[]): Promise<Message> {
  * @param messages the messages to be sent to Llama.cpp.
  * @returns the same messages in the Llama.cpp format.
  */
-function convert_messages_to_chat_history(messages: Message[]): ChatHistoryItem[] {
+function convert_messages_to_chat_history(messages: Message[]): any[] {
   // Init chat history.
-  const chat_history: ChatHistoryItem[] = [];
+  const chat_history: any[] = [];
   // Loop through messages.
   for (const message of messages) {
     if (message.role === 'system' || message.role === 'user') {
@@ -93,6 +91,9 @@ function convert_messages_to_chat_history(messages: Message[]): ChatHistoryItem[
  * @returns the response string.
  */
 async function generate_llama_cpp(messages: Message[]): Promise<Message> {
+  // Dynamically import node-llama-cpp only when needed.
+  const { getLlama, LlamaChatSession } = await import('node-llama-cpp');
+
   // Create a new instance of the Llama.cpp class.
   const llama = await getLlama();
   // Set model to use.
