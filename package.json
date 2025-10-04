@@ -1,7 +1,7 @@
 {
   "name": "@derogab/llm-proxy",
   "description": "A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, and Cloudflare AI",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": "derogab",
   "license": "MIT",
   "repository": {
@@ -43,8 +43,8 @@
   },
   "dependencies": {
     "axios": "1.12.2",
-    "dotenv": "17.2.2",
-    "node-llama-cpp": "3.13.0",
+    "dotenv": "17.2.3",
+    "node-llama-cpp": "3.14.0",
     "ollama": "0.6.0",
     "openai": "5.23.1"
   }
