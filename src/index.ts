@@ -92,7 +92,8 @@ function convert_messages_to_chat_history(messages: Message[]): any[] {
  */
 async function generate_llama_cpp(messages: Message[]): Promise<Message> {
   // Dynamically import node-llama-cpp only when needed.
-  const { getLlama, LlamaChatSession } = await import('node-llama-cpp');
+  const dynamicImport = new Function('specifier', 'return import(specifier)'); // Using Function constructor to prevent TypeScript from transpiling dynamic import to require()
+  const { getLlama, LlamaChatSession } = await dynamicImport('node-llama-cpp');
 
   // Create a new instance of the Llama.cpp class.
   const llama = await getLlama();
