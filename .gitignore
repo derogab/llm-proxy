@@ -137,3 +137,7 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# Vitest config build artifacts
+vitest.config.js
+vitest.config.js.map
