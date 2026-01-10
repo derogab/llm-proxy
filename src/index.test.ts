@@ -17,6 +17,7 @@ vi.mock('dotenv', () => ({
 
 // Mock OpenAI with proper class mock
 const mockOpenAICreate = vi.fn();
+let lastOpenAIConfig: { apiKey?: string; baseURL?: string } | undefined;
 vi.mock('openai', () => ({
   default: class MockOpenAI {
     chat = {
@@ -24,7 +25,9 @@ vi.mock('openai', () => ({
         create: mockOpenAICreate,
       },
     };
-    constructor(public config?: { apiKey?: string; baseURL?: string }) {}
+    constructor(public config?: { apiKey?: string; baseURL?: string }) {
+      lastOpenAIConfig = config;
+    }
   },
 }));
 
@@ -56,6 +59,7 @@ describe('llm-proxy', () => {
     // Clear mocks
     mockOpenAICreate.mockClear();
     mockOllamaChat.mockClear();
+    lastOpenAIConfig = undefined;
   });
 
   afterEach(() => {
@@ -107,6 +111,25 @@ describe('llm-proxy', () => {
       expect(mockOpenAICreate).toHaveBeenCalledWith({
         messages,
         model: 'gpt-4',
+      });
+    });
+
+    it('should use custom base URL when OPENAI_BASE_URL is set', async () => {
+      mockOpenAICreate.mockResolvedValue({
+        choices: [{ message: { role: 'assistant', content: 'Response' } }],
+      });
+
+      process.env.OPENAI_API_KEY = 'test-api-key';
+      process.env.OPENAI_BASE_URL = 'https://custom-api.example.com/v1';
+
+      const { generate } = await import('./index.js');
+
+      const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
+      await generate(messages);
+
+      expect(lastOpenAIConfig).toEqual({
+        apiKey: 'test-api-key',
+        baseURL: 'https://custom-api.example.com/v1',
       });
     });
 
