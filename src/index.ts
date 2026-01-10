@@ -56,10 +56,10 @@ async function generate_ollama(messages: Message[]): Promise<Message> {
 
 /**
  * Convert messages to chat history.
- * 
+ *
  * Llama.cpp expects the chat history in a custom format.
  * Convert the default messages format to the Llama.cpp format.
- * 
+ *
  * @param messages the messages to be sent to Llama.cpp.
  * @returns the same messages in the Llama.cpp format.
  */

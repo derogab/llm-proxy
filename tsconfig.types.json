@@ -9,5 +9,7 @@
     "emitDeclarationOnly": true,
     "verbatimModuleSyntax": false,
     "types": ["node"]
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "vitest.config.ts"]
 }

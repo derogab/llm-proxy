@@ -12,7 +12,19 @@ npm run build:esm    # Build ESM output only
 npm run build:types  # Build type declarations only
 ```
 
-There are no tests or linting configured in this project.
+## Test Commands
+
+```bash
+npm test              # Run all tests once
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+```
+
+Tests are written using Vitest and cover:
+- Provider selection logic (OpenAI, Cloudflare, Ollama priority)
+- Error handling for all providers
+- Message format conversion for Llama.cpp
+- API request formatting
 
 ## Architecture
 
