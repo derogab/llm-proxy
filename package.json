@@ -29,9 +29,11 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:types": "tsc -p tsconfig.types.json",
-    "test": "vitest run",
+    "test": "vitest run && npx tsx src/llama-cpp.integration.test.mts",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:llama": "npx tsx src/llama-cpp.integration.test.mts"
   },
   "files": [
     "dist"
@@ -42,15 +44,16 @@
     "gateway"
   ],
   "devDependencies": {
-    "@types/node": "24.6.2",
+    "@types/node": "25.0.6",
+    "@vitest/coverage-v8": "4.0.16",
     "typescript": "5.9.3",
     "vitest": "4.0.16"
   },
   "dependencies": {
-    "axios": "1.12.2",
+    "axios": "1.13.2",
     "dotenv": "17.2.3",
     "node-llama-cpp": "3.15.0",
-    "ollama": "0.6.2",
-    "openai": "6.1.0"
+    "ollama": "0.6.3",
+    "openai": "6.16.0"
   }
 }
