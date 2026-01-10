@@ -421,4 +421,36 @@ describe('llm-proxy', () => {
       });
     });
   });
+
+  describe('Llama.cpp provider', () => {
+    it('should not select Llama.cpp when LLAMA_CPP_MODEL_PATH is empty', async () => {
+      // With empty string for LLAMA_CPP_MODEL_PATH, it should throw "No available LLM found"
+      // because empty string is falsy
+      process.env.LLAMA_CPP_MODEL_PATH = '';
+
+      const { generate } = await import('./index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+
+      await expect(generate(messages)).rejects.toThrow('No available LLM found.');
+    });
+
+    it('should prioritize Ollama over Llama.cpp when both are configured', async () => {
+      mockOllamaChat.mockResolvedValue({
+        message: { role: 'assistant', content: 'Ollama wins' },
+      });
+
+      // Set both Ollama and Llama.cpp
+      process.env.OLLAMA_URI = 'http://localhost:11434';
+      process.env.LLAMA_CPP_MODEL_PATH = '/path/to/model.gguf';
+
+      const { generate } = await import('./index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'Ollama wins' });
+      expect(mockOllamaChat).toHaveBeenCalled();
+    });
+  });
 });

@@ -29,9 +29,11 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:types": "tsc -p tsconfig.types.json",
-    "test": "vitest run",
+    "test": "vitest run && npx tsx src/llama-cpp.integration.test.mts",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:llama": "npx tsx src/llama-cpp.integration.test.mts"
   },
   "files": [
     "dist"
