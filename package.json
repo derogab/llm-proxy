@@ -1,7 +1,7 @@
 {
   "name": "@derogab/llm-proxy",
   "description": "A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, and Cloudflare AI",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "type": "module",
   "author": "derogab",
   "license": "MIT",
@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm && npm run build:types",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:types": "tsc -p tsconfig.types.json",
     "test": "vitest run && npx tsx test/llama-cpp.integration.test.mts",
