@@ -22,7 +22,7 @@ npm run test:watch    # Run tests in watch mode
 npm run test:coverage # Run tests with coverage report
 ```
 
-**Important**: Always run `npm run test:unit` after making changes to verify nothing is broken. Tests are located in the `test/` folder.
+**Important**: Always run `npm test` after making changes to verify nothing is broken. Tests are located in the `test/` folder.
 
 Tests are written using Vitest and cover:
 - Provider selection logic (OpenAI, Cloudflare, Ollama priority)
