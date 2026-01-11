@@ -41,7 +41,7 @@ jobs:
       - name: Cache Llama.cpp model
         uses: actions/cache@v4
         with:
-          path: ${{ runner.temp }}/llm-proxy-test-models
+          path: ./test/models
           key: llama-model-tinyllama-1.1b-q4km
       - name: Install dependencies
         run: npm ci
@@ -49,5 +49,3 @@ jobs:
         run: npm run build
       - name: Run Llama.cpp integration tests
         run: npm run test:llama
-        env:
-          TMPDIR: ${{ runner.temp }}

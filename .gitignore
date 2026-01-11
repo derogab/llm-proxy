@@ -141,3 +141,6 @@ dist
 # Vitest config build artifacts
 vitest.config.js
 vitest.config.js.map
+
+# Test models (downloaded during integration tests)
+test/models/

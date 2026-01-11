@@ -69,7 +69,7 @@ describe('llm-proxy', () => {
 
   describe('generate function - provider selection', () => {
     it('should throw error when no LLM is configured', async () => {
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
 
@@ -83,7 +83,7 @@ describe('llm-proxy', () => {
 
       process.env.OPENAI_API_KEY = 'test-api-key';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -103,7 +103,7 @@ describe('llm-proxy', () => {
       process.env.OPENAI_API_KEY = 'test-api-key';
       process.env.OPENAI_MODEL = 'gpt-4';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
       await generate(messages);
@@ -122,7 +122,7 @@ describe('llm-proxy', () => {
       process.env.OPENAI_API_KEY = 'test-api-key';
       process.env.OPENAI_BASE_URL = 'https://custom-api.example.com/v1';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
       await generate(messages);
@@ -146,7 +146,7 @@ describe('llm-proxy', () => {
       process.env.CLOUDFLARE_AUTH_KEY = 'auth-key-456';
       process.env.CLOUDFLARE_MODEL = '@cf/meta/llama-2-7b-chat';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -176,7 +176,7 @@ describe('llm-proxy', () => {
       process.env.CLOUDFLARE_AUTH_KEY = 'auth-key-456';
       process.env.CLOUDFLARE_MODEL = '@cf/meta/llama-2-7b-chat';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -191,7 +191,7 @@ describe('llm-proxy', () => {
 
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -211,7 +211,7 @@ describe('llm-proxy', () => {
       process.env.OLLAMA_URI = 'http://localhost:11434';
       process.env.OLLAMA_MODEL = 'mistral';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
       await generate(messages);
@@ -236,7 +236,7 @@ describe('llm-proxy', () => {
       process.env.CLOUDFLARE_MODEL = 'model';
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -261,7 +261,7 @@ describe('llm-proxy', () => {
       process.env.CLOUDFLARE_MODEL = 'model';
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -280,7 +280,7 @@ describe('llm-proxy', () => {
       process.env.OLLAMA_URI = 'http://localhost:11434';
       process.env.LLAMA_CPP_MODEL_PATH = '/path/to/model.gguf';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
@@ -296,7 +296,7 @@ describe('llm-proxy', () => {
 
       process.env.OPENAI_API_KEY = 'test-key';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
 
@@ -311,7 +311,7 @@ describe('llm-proxy', () => {
       process.env.CLOUDFLARE_AUTH_KEY = 'key';
       process.env.CLOUDFLARE_MODEL = 'model';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages = [{ role: 'user', content: 'Hello' }];
 
@@ -323,7 +323,7 @@ describe('llm-proxy', () => {
 
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
 
@@ -333,12 +333,12 @@ describe('llm-proxy', () => {
 
   describe('Type exports', () => {
     it('should export generate function', async () => {
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
       expect(typeof generate).toBe('function');
     });
 
     it('should export CloudflareMessage and MessageInputParam types', async () => {
-      const module = await import('./index.js');
+      const module = await import('../src/index.js');
       // The module should have a generate export
       expect('generate' in module).toBe(true);
     });
@@ -352,7 +352,7 @@ describe('llm-proxy', () => {
 
       process.env.OPENAI_API_KEY = 'test-key';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [];
       await generate(messages);
@@ -370,7 +370,7 @@ describe('llm-proxy', () => {
 
       process.env.OPENAI_API_KEY = 'test-key';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: ChatCompletionMessageParam[] = [
         { role: 'system', content: 'You are a helpful assistant' },
@@ -402,7 +402,7 @@ describe('llm-proxy', () => {
       process.env.CLOUDFLARE_AUTH_KEY = 'my-auth-key';
       process.env.CLOUDFLARE_MODEL = '@cf/meta/llama-2-7b-chat-int8';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages = [
         { role: 'system', content: 'You are helpful' },
@@ -428,7 +428,7 @@ describe('llm-proxy', () => {
       // because empty string is falsy
       process.env.LLAMA_CPP_MODEL_PATH = '';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
 
@@ -444,7 +444,7 @@ describe('llm-proxy', () => {
       process.env.OLLAMA_URI = 'http://localhost:11434';
       process.env.LLAMA_CPP_MODEL_PATH = '/path/to/model.gguf';
 
-      const { generate } = await import('./index.js');
+      const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
       const result = await generate(messages);
