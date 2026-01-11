@@ -15,10 +15,14 @@ npm run build:types  # Build type declarations only
 ## Test Commands
 
 ```bash
-npm test              # Run all tests once
+npm test              # Run all tests (unit + integration)
+npm run test:unit     # Run unit tests only
+npm run test:llama    # Run Llama.cpp integration tests only
 npm run test:watch    # Run tests in watch mode
 npm run test:coverage # Run tests with coverage report
 ```
+
+**Important**: Always run `npm run test:unit` after making changes to verify nothing is broken. Tests are located in the `test/` folder.
 
 Tests are written using Vitest and cover:
 - Provider selection logic (OpenAI, Cloudflare, Ollama priority)
