@@ -5,16 +5,17 @@
  * the source code uses `new Function()` for dynamic imports which Vitest
  * cannot intercept.
  *
- * Run with: npx tsx src/llama-cpp.integration.test.mts
+ * Run with: npx tsx test/llama-cpp.integration.test.mts
  */
 
 import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { tmpdir } from 'os';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { resolveModelFile } from 'node-llama-cpp';
 import type { Message } from 'ollama';
 
-const MODELS_DIR = join(tmpdir(), 'llm-proxy-test-models');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const MODELS_DIR = join(__dirname, 'models');
 
 // Store original env
 const originalEnv = { ...process.env };
@@ -71,7 +72,7 @@ async function runTests() {
 
   // Test 1: Basic generation
   results.push(await test('should generate a response using Llama.cpp with a real model', async () => {
-    const { generate } = await import('./index.js');
+    const { generate } = await import('../src/index.js');
 
     const messages: Message[] = [
       { role: 'user', content: 'Say hello in exactly 3 words.' }
@@ -86,7 +87,7 @@ async function runTests() {
 
   // Test 2: Multi-turn conversation
   results.push(await test('should handle multi-turn conversation with chat history', async () => {
-    const { generate } = await import('./index.js');
+    const { generate } = await import('../src/index.js');
 
     const messages: Message[] = [
       { role: 'system', content: 'You are a helpful assistant that gives very brief responses.' },
@@ -104,7 +105,7 @@ async function runTests() {
 
   // Test 3: System message
   results.push(await test('should handle system message properly', async () => {
-    const { generate } = await import('./index.js');
+    const { generate } = await import('../src/index.js');
 
     const messages: Message[] = [
       { role: 'system', content: 'Always respond with exactly one word.' },
@@ -122,7 +123,7 @@ async function runTests() {
   results.push(await test('should throw error for non-existent model path', async () => {
     process.env.LLAMA_CPP_MODEL_PATH = '/path/to/nonexistent/model.gguf';
 
-    const { generate } = await import('./index.js');
+    const { generate } = await import('../src/index.js');
 
     const messages: Message[] = [{ role: 'user', content: 'Hello' }];
 
