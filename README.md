@@ -29,15 +29,15 @@ console.log(response.content);
 
 ## Configuration
 
-The package automatically detects which LLM provider to use based on your environment variables.
+The package automatically detects which LLM provider to use based on your environment variables.  
 Configure one or more providers:
 
-### Provider Selection (Optional)
+### Provider Selection
 ```bash
 PROVIDER=openai # Optional, explicitly select a provider (openai, cloudflare, ollama, llama.cpp)
 ```
 
-When `PROVIDER` is set, the package will use that specific provider and skip automatic detection. This is useful when you have multiple providers configured but want to force a specific one. If the required credentials for the specified provider are not configured, an error will be thrown.
+When `PROVIDER` is set, the package will use that specific provider and skip automatic detection. This is useful when you have multiple providers configured but want to force a specific one. If the required credentials for the specified provider are not configured, an error will be thrown. If not set, consider [provider priority](#provider-priority).
 
 ### OpenAI
 ```bash
