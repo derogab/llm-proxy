@@ -448,17 +448,21 @@ describe('llm-proxy', () => {
       );
     });
 
-    it('should throw error when PROVIDER is "ollama" but OLLAMA_URI is missing', async () => {
+    it('should use default host when PROVIDER is "ollama" and OLLAMA_URI is not set', async () => {
+      mockOllamaChat.mockResolvedValue({
+        message: { role: 'assistant', content: 'Ollama with default host' },
+      });
+
       process.env.PROVIDER = 'ollama';
-      // Don't set OLLAMA_URI
+      // Don't set OLLAMA_URI - should use default localhost:11434
 
       const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
 
-      await expect(generate(messages)).rejects.toThrow(
-        'PROVIDER is set to "ollama" but OLLAMA_URI is not configured.'
-      );
+      expect(result).toEqual({ role: 'assistant', content: 'Ollama with default host' });
+      expect(mockOllamaChat).toHaveBeenCalled();
     });
 
     it('should throw error when PROVIDER is "llama.cpp" but LLAMA_CPP_MODEL_PATH is missing', async () => {

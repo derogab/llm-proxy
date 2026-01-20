@@ -169,9 +169,7 @@ export async function generate(messages: MessageInputParam[]): Promise<MessageIn
         }
         return await generate_cloudflare(messages as CloudflareMessage[]);
       case 'ollama':
-        if (!process.env.OLLAMA_URI) {
-          throw new Error('PROVIDER is set to "ollama" but OLLAMA_URI is not configured.');
-        }
+        // No validation needed - generate_ollama has default host
         return await generate_ollama(messages as Message[]);
       case 'llama.cpp':
         if (!process.env.LLAMA_CPP_MODEL_PATH) {
