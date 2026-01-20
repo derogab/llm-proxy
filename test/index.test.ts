@@ -420,6 +420,59 @@ describe('llm-proxy', () => {
       expect(mockOpenAICreate).toHaveBeenCalled();
       expect(mockOllamaChat).not.toHaveBeenCalled();
     });
+
+    it('should throw error when PROVIDER is "openai" but OPENAI_API_KEY is missing', async () => {
+      process.env.PROVIDER = 'openai';
+      // Don't set OPENAI_API_KEY
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
+
+      await expect(generate(messages)).rejects.toThrow(
+        'PROVIDER is set to "openai" but OPENAI_API_KEY is not configured.'
+      );
+    });
+
+    it('should throw error when PROVIDER is "cloudflare" but credentials are missing', async () => {
+      process.env.PROVIDER = 'cloudflare';
+      process.env.CLOUDFLARE_ACCOUNT_ID = 'account';
+      // Missing CLOUDFLARE_AUTH_KEY and CLOUDFLARE_MODEL
+
+      const { generate } = await import('../src/index.js');
+
+      const messages = [{ role: 'user', content: 'Hello' }];
+
+      await expect(generate(messages)).rejects.toThrow(
+        'PROVIDER is set to "cloudflare" but required credentials (CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AUTH_KEY, CLOUDFLARE_MODEL) are not fully configured.'
+      );
+    });
+
+    it('should throw error when PROVIDER is "ollama" but OLLAMA_URI is missing', async () => {
+      process.env.PROVIDER = 'ollama';
+      // Don't set OLLAMA_URI
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+
+      await expect(generate(messages)).rejects.toThrow(
+        'PROVIDER is set to "ollama" but OLLAMA_URI is not configured.'
+      );
+    });
+
+    it('should throw error when PROVIDER is "llama.cpp" but LLAMA_CPP_MODEL_PATH is missing', async () => {
+      process.env.PROVIDER = 'llama.cpp';
+      // Don't set LLAMA_CPP_MODEL_PATH
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+
+      await expect(generate(messages)).rejects.toThrow(
+        'PROVIDER is set to "llama.cpp" but LLAMA_CPP_MODEL_PATH is not configured.'
+      );
+    });
   });
 
   describe('generate function - error handling', () => {
