@@ -46,6 +46,7 @@ describe('llm-proxy', () => {
     vi.resetModules();
     process.env = { ...originalEnv };
     // Clear all mocked env vars that affect provider selection
+    delete process.env.PROVIDER;
     delete process.env.OPENAI_API_KEY;
     delete process.env.OPENAI_BASE_URL;
     delete process.env.OPENAI_MODEL;
@@ -287,6 +288,137 @@ describe('llm-proxy', () => {
 
       expect(result).toEqual({ role: 'assistant', content: 'Ollama wins' });
       expect(mockOllamaChat).toHaveBeenCalled();
+    });
+  });
+
+  describe('generate function - PROVIDER environment variable', () => {
+    it('should use specified provider when PROVIDER is set to "openai"', async () => {
+      mockOpenAICreate.mockResolvedValue({
+        choices: [{ message: { role: 'assistant', content: 'OpenAI response' } }],
+      });
+
+      // Set PROVIDER and OpenAI credentials
+      process.env.PROVIDER = 'openai';
+      process.env.OPENAI_API_KEY = 'test-key';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'OpenAI response' });
+      expect(mockOpenAICreate).toHaveBeenCalled();
+    });
+
+    it('should use specified provider when PROVIDER is set to "cloudflare"', async () => {
+      const { default: axios } = await import('axios');
+      vi.mocked(axios).mockResolvedValue({
+        data: {
+          success: true,
+          result: { response: 'Cloudflare response' },
+        },
+      } as any);
+
+      // Set PROVIDER and Cloudflare credentials
+      process.env.PROVIDER = 'cloudflare';
+      process.env.CLOUDFLARE_ACCOUNT_ID = 'account';
+      process.env.CLOUDFLARE_AUTH_KEY = 'key';
+      process.env.CLOUDFLARE_MODEL = 'model';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'Cloudflare response' });
+      expect(vi.mocked(axios)).toHaveBeenCalled();
+    });
+
+    it('should use specified provider when PROVIDER is set to "ollama"', async () => {
+      mockOllamaChat.mockResolvedValue({
+        message: { role: 'assistant', content: 'Ollama response' },
+      });
+
+      // Set PROVIDER and Ollama URI
+      process.env.PROVIDER = 'ollama';
+      process.env.OLLAMA_URI = 'http://localhost:11434';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'Ollama response' });
+      expect(mockOllamaChat).toHaveBeenCalled();
+    });
+
+    it('should be case-insensitive when PROVIDER is set', async () => {
+      mockOpenAICreate.mockResolvedValue({
+        choices: [{ message: { role: 'assistant', content: 'Response' } }],
+      });
+
+      // Use uppercase PROVIDER value
+      process.env.PROVIDER = 'OPENAI';
+      process.env.OPENAI_API_KEY = 'test-key';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
+      await generate(messages);
+
+      expect(mockOpenAICreate).toHaveBeenCalled();
+    });
+
+    it('should override priority order when PROVIDER is set', async () => {
+      mockOllamaChat.mockResolvedValue({
+        message: { role: 'assistant', content: 'Ollama wins' },
+      });
+
+      // Set PROVIDER to ollama but also set OpenAI (which has higher priority normally)
+      process.env.PROVIDER = 'ollama';
+      process.env.OPENAI_API_KEY = 'test-key';
+      process.env.OLLAMA_URI = 'http://localhost:11434';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'Ollama wins' });
+      expect(mockOllamaChat).toHaveBeenCalled();
+      expect(mockOpenAICreate).not.toHaveBeenCalled();
+    });
+
+    it('should throw error for invalid PROVIDER value', async () => {
+      process.env.PROVIDER = 'invalid-provider';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+
+      await expect(generate(messages)).rejects.toThrow(
+        'Invalid PROVIDER: "invalid-provider". Valid options are: openai, cloudflare, ollama, llama.cpp'
+      );
+    });
+
+    it('should fall back to priority order when PROVIDER is not set', async () => {
+      mockOpenAICreate.mockResolvedValue({
+        choices: [{ message: { role: 'assistant', content: 'OpenAI by priority' } }],
+      });
+
+      // Don't set PROVIDER, but set multiple providers
+      process.env.OPENAI_API_KEY = 'test-key';
+      process.env.OLLAMA_URI = 'http://localhost:11434';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      // Should use OpenAI because it has highest priority
+      expect(result).toEqual({ role: 'assistant', content: 'OpenAI by priority' });
+      expect(mockOpenAICreate).toHaveBeenCalled();
+      expect(mockOllamaChat).not.toHaveBeenCalled();
     });
   });
 

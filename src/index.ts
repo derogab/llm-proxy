@@ -148,16 +148,35 @@ async function generate_cloudflare(messages: CloudflareMessage[]): Promise<Cloud
 
 /**
  * Generate a response using an LLM.
- * 
+ *
  * @param messages the messages to be sent to the LLM.
  * @returns the response string.
  */
 export async function generate(messages: MessageInputParam[]): Promise<MessageInputParam> {
+  // If PROVIDER environment variable is set, use the specified provider.
+  const provider = process.env.PROVIDER?.toLowerCase();
+
+  if (provider) {
+    switch (provider) {
+      case 'openai':
+        return await generate_openai(messages as ChatCompletionMessageParam[]);
+      case 'cloudflare':
+        return await generate_cloudflare(messages as CloudflareMessage[]);
+      case 'ollama':
+        return await generate_ollama(messages as Message[]);
+      case 'llama.cpp':
+        return await generate_llama_cpp(messages as Message[]);
+      default:
+        throw new Error(`Invalid PROVIDER: "${process.env.PROVIDER}". Valid options are: openai, cloudflare, ollama, llama.cpp`);
+    }
+  }
+
+  // If PROVIDER is not set, use the default priority order.
   // Check what LLM to use, based on the environment variables.
   if (process.env.OPENAI_API_KEY) {
     // If openai key is available, use openai.
     return await generate_openai(messages as ChatCompletionMessageParam[]);
-  
+
   } else if (process.env.CLOUDFLARE_ACCOUNT_ID && process.env.CLOUDFLARE_AUTH_KEY && process.env.CLOUDFLARE_MODEL) {
     // If cloudflare keys are available, use cloudflare.
     return await generate_cloudflare(messages as CloudflareMessage[]);
