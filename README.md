@@ -32,6 +32,13 @@ console.log(response.content);
 The package automatically detects which LLM provider to use based on your environment variables.  
 Configure one or more providers:
 
+### Provider Selection
+```bash
+PROVIDER=openai # Optional, explicitly select a provider (openai, cloudflare, ollama, llama.cpp)
+```
+
+When `PROVIDER` is set, the package will use that specific provider and skip automatic detection. This is useful when you have multiple providers configured but want to force a specific one. If the required credentials for the specified provider are not configured, an error will be thrown. If not set, consider [provider priority](#provider-priority).
+
 ### OpenAI
 ```bash
 OPENAI_API_KEY=your_openai_api_key # Required
@@ -79,7 +86,9 @@ type MessageInputParam = {
 
 ## Provider Priority
 
-The package selects providers in the following order:
+If the `PROVIDER` environment variable is set, the specified provider will be used directly (valid values: `openai`, `cloudflare`, `ollama`, `llama.cpp`).
+
+Otherwise, the package selects providers automatically in the following order:
 1. **OpenAI** (if `OPENAI_API_KEY` is set)
 2. **Cloudflare AI** (if `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AUTH_KEY`, and `CLOUDFLARE_MODEL` are set)
 3. **Ollama** (if `OLLAMA_URI` is set)
