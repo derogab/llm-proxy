@@ -46,6 +46,7 @@ describe('llm-proxy', () => {
     vi.resetModules();
     process.env = { ...originalEnv };
     // Clear all mocked env vars that affect provider selection
+    delete process.env.LLM_PROVIDER;
     delete process.env.PROVIDER;
     delete process.env.OPENAI_API_KEY;
     delete process.env.OPENAI_BASE_URL;
@@ -291,14 +292,14 @@ describe('llm-proxy', () => {
     });
   });
 
-  describe('generate function - PROVIDER environment variable', () => {
-    it('should use specified provider when PROVIDER is set to "openai"', async () => {
+  describe('generate function - LLM_PROVIDER environment variable', () => {
+    it('should use specified provider when LLM_PROVIDER is set to "openai"', async () => {
       mockOpenAICreate.mockResolvedValue({
         choices: [{ message: { role: 'assistant', content: 'OpenAI response' } }],
       });
 
-      // Set PROVIDER and OpenAI credentials
-      process.env.PROVIDER = 'openai';
+      // Set LLM_PROVIDER and OpenAI credentials
+      process.env.LLM_PROVIDER = 'openai';
       process.env.OPENAI_API_KEY = 'test-key';
 
       const { generate } = await import('../src/index.js');
@@ -310,7 +311,7 @@ describe('llm-proxy', () => {
       expect(mockOpenAICreate).toHaveBeenCalled();
     });
 
-    it('should use specified provider when PROVIDER is set to "cloudflare"', async () => {
+    it('should use specified provider when LLM_PROVIDER is set to "cloudflare"', async () => {
       const { default: axios } = await import('axios');
       vi.mocked(axios).mockResolvedValue({
         data: {
@@ -319,8 +320,8 @@ describe('llm-proxy', () => {
         },
       } as any);
 
-      // Set PROVIDER and Cloudflare credentials
-      process.env.PROVIDER = 'cloudflare';
+      // Set LLM_PROVIDER and Cloudflare credentials
+      process.env.LLM_PROVIDER = 'cloudflare';
       process.env.CLOUDFLARE_ACCOUNT_ID = 'account';
       process.env.CLOUDFLARE_AUTH_KEY = 'key';
       process.env.CLOUDFLARE_MODEL = 'model';
@@ -334,13 +335,13 @@ describe('llm-proxy', () => {
       expect(vi.mocked(axios)).toHaveBeenCalled();
     });
 
-    it('should use specified provider when PROVIDER is set to "ollama"', async () => {
+    it('should use specified provider when LLM_PROVIDER is set to "ollama"', async () => {
       mockOllamaChat.mockResolvedValue({
         message: { role: 'assistant', content: 'Ollama response' },
       });
 
-      // Set PROVIDER and Ollama URI
-      process.env.PROVIDER = 'ollama';
+      // Set LLM_PROVIDER and Ollama URI
+      process.env.LLM_PROVIDER = 'ollama';
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
       const { generate } = await import('../src/index.js');
@@ -352,13 +353,13 @@ describe('llm-proxy', () => {
       expect(mockOllamaChat).toHaveBeenCalled();
     });
 
-    it('should be case-insensitive when PROVIDER is set', async () => {
+    it('should be case-insensitive when LLM_PROVIDER is set', async () => {
       mockOpenAICreate.mockResolvedValue({
         choices: [{ message: { role: 'assistant', content: 'Response' } }],
       });
 
-      // Use uppercase PROVIDER value
-      process.env.PROVIDER = 'OPENAI';
+      // Use uppercase LLM_PROVIDER value
+      process.env.LLM_PROVIDER = 'OPENAI';
       process.env.OPENAI_API_KEY = 'test-key';
 
       const { generate } = await import('../src/index.js');
@@ -369,13 +370,13 @@ describe('llm-proxy', () => {
       expect(mockOpenAICreate).toHaveBeenCalled();
     });
 
-    it('should override priority order when PROVIDER is set', async () => {
+    it('should override priority order when LLM_PROVIDER is set', async () => {
       mockOllamaChat.mockResolvedValue({
         message: { role: 'assistant', content: 'Ollama wins' },
       });
 
-      // Set PROVIDER to ollama but also set OpenAI (which has higher priority normally)
-      process.env.PROVIDER = 'ollama';
+      // Set LLM_PROVIDER to ollama but also set OpenAI (which has higher priority normally)
+      process.env.LLM_PROVIDER = 'ollama';
       process.env.OPENAI_API_KEY = 'test-key';
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
@@ -389,24 +390,24 @@ describe('llm-proxy', () => {
       expect(mockOpenAICreate).not.toHaveBeenCalled();
     });
 
-    it('should throw error for invalid PROVIDER value', async () => {
-      process.env.PROVIDER = 'invalid-provider';
+    it('should throw error for invalid LLM_PROVIDER value', async () => {
+      process.env.LLM_PROVIDER = 'invalid-provider';
 
       const { generate } = await import('../src/index.js');
 
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
 
       await expect(generate(messages)).rejects.toThrow(
-        'Invalid PROVIDER: "invalid-provider". Valid options are: openai, cloudflare, ollama, llama.cpp'
+        'Invalid LLM_PROVIDER: "invalid-provider". Valid options are: openai, cloudflare, ollama, llama.cpp'
       );
     });
 
-    it('should fall back to priority order when PROVIDER is not set', async () => {
+    it('should fall back to priority order when LLM_PROVIDER is not set', async () => {
       mockOpenAICreate.mockResolvedValue({
         choices: [{ message: { role: 'assistant', content: 'OpenAI by priority' } }],
       });
 
-      // Don't set PROVIDER, but set multiple providers
+      // Don't set LLM_PROVIDER, but set multiple providers
       process.env.OPENAI_API_KEY = 'test-key';
       process.env.OLLAMA_URI = 'http://localhost:11434';
 
@@ -421,8 +422,8 @@ describe('llm-proxy', () => {
       expect(mockOllamaChat).not.toHaveBeenCalled();
     });
 
-    it('should throw error when PROVIDER is "openai" but OPENAI_API_KEY is missing', async () => {
-      process.env.PROVIDER = 'openai';
+    it('should throw error when LLM_PROVIDER is "openai" but OPENAI_API_KEY is missing', async () => {
+      process.env.LLM_PROVIDER = 'openai';
       // Don't set OPENAI_API_KEY
 
       const { generate } = await import('../src/index.js');
@@ -430,12 +431,12 @@ describe('llm-proxy', () => {
       const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
 
       await expect(generate(messages)).rejects.toThrow(
-        'PROVIDER is set to "openai" but OPENAI_API_KEY is not configured.'
+        'LLM_PROVIDER is set to "openai" but OPENAI_API_KEY is not configured.'
       );
     });
 
-    it('should throw error when PROVIDER is "cloudflare" but credentials are missing', async () => {
-      process.env.PROVIDER = 'cloudflare';
+    it('should throw error when LLM_PROVIDER is "cloudflare" but credentials are missing', async () => {
+      process.env.LLM_PROVIDER = 'cloudflare';
       process.env.CLOUDFLARE_ACCOUNT_ID = 'account';
       // Missing CLOUDFLARE_AUTH_KEY and CLOUDFLARE_MODEL
 
@@ -444,16 +445,16 @@ describe('llm-proxy', () => {
       const messages = [{ role: 'user', content: 'Hello' }];
 
       await expect(generate(messages)).rejects.toThrow(
-        'PROVIDER is set to "cloudflare" but required credentials (CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AUTH_KEY, CLOUDFLARE_MODEL) are not fully configured.'
+        'LLM_PROVIDER is set to "cloudflare" but required credentials (CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AUTH_KEY, CLOUDFLARE_MODEL) are not fully configured.'
       );
     });
 
-    it('should use default host when PROVIDER is "ollama" and OLLAMA_URI is not set', async () => {
+    it('should use default host when LLM_PROVIDER is "ollama" and OLLAMA_URI is not set', async () => {
       mockOllamaChat.mockResolvedValue({
         message: { role: 'assistant', content: 'Ollama with default host' },
       });
 
-      process.env.PROVIDER = 'ollama';
+      process.env.LLM_PROVIDER = 'ollama';
       // Don't set OLLAMA_URI - should use default localhost:11434
 
       const { generate } = await import('../src/index.js');
@@ -465,8 +466,8 @@ describe('llm-proxy', () => {
       expect(mockOllamaChat).toHaveBeenCalled();
     });
 
-    it('should throw error when PROVIDER is "llama.cpp" but LLAMA_CPP_MODEL_PATH is missing', async () => {
-      process.env.PROVIDER = 'llama.cpp';
+    it('should throw error when LLM_PROVIDER is "llama.cpp" but LLAMA_CPP_MODEL_PATH is missing', async () => {
+      process.env.LLM_PROVIDER = 'llama.cpp';
       // Don't set LLAMA_CPP_MODEL_PATH
 
       const { generate } = await import('../src/index.js');
@@ -474,8 +475,47 @@ describe('llm-proxy', () => {
       const messages: Message[] = [{ role: 'user', content: 'Hello' }];
 
       await expect(generate(messages)).rejects.toThrow(
-        'PROVIDER is set to "llama.cpp" but LLAMA_CPP_MODEL_PATH is not configured.'
+        'LLM_PROVIDER is set to "llama.cpp" but LLAMA_CPP_MODEL_PATH is not configured.'
       );
+    });
+
+    it('should use PROVIDER as fallback when LLM_PROVIDER is not set', async () => {
+      mockOpenAICreate.mockResolvedValue({
+        choices: [{ message: { role: 'assistant', content: 'OpenAI via PROVIDER fallback' } }],
+      });
+
+      // Set PROVIDER (legacy) but not LLM_PROVIDER
+      process.env.PROVIDER = 'openai';
+      process.env.OPENAI_API_KEY = 'test-key';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: ChatCompletionMessageParam[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'OpenAI via PROVIDER fallback' });
+      expect(mockOpenAICreate).toHaveBeenCalled();
+    });
+
+    it('should prefer LLM_PROVIDER over PROVIDER when both are set', async () => {
+      mockOllamaChat.mockResolvedValue({
+        message: { role: 'assistant', content: 'Ollama via LLM_PROVIDER' },
+      });
+
+      // Set both env vars - LLM_PROVIDER should take precedence
+      process.env.LLM_PROVIDER = 'ollama';
+      process.env.PROVIDER = 'openai';
+      process.env.OPENAI_API_KEY = 'test-key';
+      process.env.OLLAMA_URI = 'http://localhost:11434';
+
+      const { generate } = await import('../src/index.js');
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const result = await generate(messages);
+
+      expect(result).toEqual({ role: 'assistant', content: 'Ollama via LLM_PROVIDER' });
+      expect(mockOllamaChat).toHaveBeenCalled();
+      expect(mockOpenAICreate).not.toHaveBeenCalled();
     });
   });
 

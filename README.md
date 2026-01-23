@@ -34,10 +34,12 @@ Configure one or more providers:
 
 ### Provider Selection
 ```bash
-PROVIDER=openai # Optional, explicitly select a provider (openai, cloudflare, ollama, llama.cpp)
+LLM_PROVIDER=openai # Optional, explicitly select a provider (openai, cloudflare, ollama, llama.cpp)
 ```
 
-When `PROVIDER` is set, the package will use that specific provider and skip automatic detection. This is useful when you have multiple providers configured but want to force a specific one. If the required credentials for the specified provider are not configured, an error will be thrown. If not set, consider [provider priority](#provider-priority).
+When `LLM_PROVIDER` is set, the package will use that specific provider and skip automatic detection. This is useful when you have multiple providers configured but want to force a specific one. If the required credentials for the specified provider are not configured, an error will be thrown. If not set, consider [provider priority](#provider-priority).
+
+> **Note:** The legacy `PROVIDER` environment variable is still supported as a fallback for backward compatibility, but `LLM_PROVIDER` takes precedence when both are set.
 
 ### OpenAI
 ```bash
@@ -86,7 +88,7 @@ type MessageInputParam = {
 
 ## Provider Priority
 
-If the `PROVIDER` environment variable is set, the specified provider will be used directly (valid values: `openai`, `cloudflare`, `ollama`, `llama.cpp`).
+If the `LLM_PROVIDER` environment variable is set (or the legacy `PROVIDER` as fallback), the specified provider will be used directly (valid values: `openai`, `cloudflare`, `ollama`, `llama.cpp`).
 
 Otherwise, the package selects providers automatically in the following order:
 1. **OpenAI** (if `OPENAI_API_KEY` is set)
