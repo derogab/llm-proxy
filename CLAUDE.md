@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Proxy Collection
+
+This package is part of a family of plug-and-play proxy packages:
+
+- [`@derogab/llm-proxy`](https://github.com/derogab/llm-proxy) - LLM provider proxy (this package)
+- [`@derogab/stt-proxy`](https://github.com/derogab/stt-proxy) - Speech-to-Text provider proxy
+
+**Important**: Before implementing any changes, you MUST check the other projects in this family to see if similar changes have already been made. If so, follow the same structure, patterns, and specifications used there. This ensures consistency across all proxy packages in the long term.
+
 ## Build Commands
 
 ```bash
