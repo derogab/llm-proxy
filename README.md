@@ -1,6 +1,10 @@
 # llm-proxy
 A simple and lightweight proxy for seamless integration with multiple LLM providers including OpenAI, Ollama, Cloudflare AI, and Llama.cpp.
 
+> **Middleware Collection**: This package is part of a plug-and-play middleware/proxy/gateway collection designed for easy integration into your projects:
+> - [`@derogab/llm-proxy`](https://github.com/derogab/llm-proxy) - LLM provider proxy (this package)
+> - [`@derogab/stt-proxy`](https://github.com/derogab/stt-proxy) - Speech-to-Text provider proxy
+
 ## Features
 
 - **Multi-provider support**: Switch between OpenAI, Ollama, Cloudflare AI, and Llama.cpp with environment variables.
