@@ -25,8 +25,24 @@ dotenv.config();
  * @returns the response string from the OpenAI API.
  */
 async function generate_openai(messages: ChatCompletionMessageParam[]): Promise<ChatCompletionMessageParam> {
+  // Build default headers for OpenRouter attribution (optional).
+  const defaultHeaders: Record<string, string> = {};
+  if (process.env.OPENAI_OPENROUTER_REFERER) {
+    defaultHeaders['HTTP-Referer'] = process.env.OPENAI_OPENROUTER_REFERER;
+  }
+  if (process.env.OPENAI_OPENROUTER_TITLE) {
+    defaultHeaders['X-OpenRouter-Title'] = process.env.OPENAI_OPENROUTER_TITLE;
+  }
+  if (process.env.OPENAI_OPENROUTER_CATEGORIES) {
+    defaultHeaders['X-OpenRouter-Categories'] = process.env.OPENAI_OPENROUTER_CATEGORIES;
+  }
+
   // Create a new instance of the OpenAI class.
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL: process.env.OPENAI_BASE_URL });
+  const openai = new OpenAI({ 
+    apiKey: process.env.OPENAI_API_KEY, 
+    baseURL: process.env.OPENAI_BASE_URL,
+    defaultHeaders: Object.keys(defaultHeaders).length > 0 ? defaultHeaders : undefined,
+  });
   // Call the OpenAI API.
   const chatCompletion = await openai.chat.completions.create({
     messages: messages,
