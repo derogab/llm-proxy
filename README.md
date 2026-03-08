@@ -50,6 +50,12 @@ When `LLM_PROVIDER` is set, the package will use that specific provider and skip
 OPENAI_API_KEY=your_openai_api_key # Required
 OPENAI_BASE_URL=https://api.openai.com/v1 # Optional
 OPENAI_MODEL=gpt-4o-mini                  # Optional, defaults to gpt-4o-mini
+
+# Optional: When using OpenRouter (OPENAI_BASE_URL=https://openrouter.ai/api/v1),
+# set these headers to appear in https://openrouter.ai/docs/app-attribution
+OPENAI_OPENROUTER_REFERER=https://yourapp.com      # Your app's URL
+OPENAI_OPENROUTER_TITLE=Your App Name              # Your app's display name
+OPENAI_OPENROUTER_CATEGORIES=category1,category2   # Comma-separated categories
 ```
 
 ### Cloudflare AI
