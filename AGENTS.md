@@ -12,6 +12,8 @@ npm run build:esm    # Build ESM output only
 npm run build:types  # Build type declarations only
 ```
 
+When adding or updating npm packages, install exact versions with `npm install --save-exact` (or `npm install --save-dev --save-exact` for dev dependencies).
+
 ## Test Commands
 
 ```bash
