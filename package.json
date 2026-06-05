@@ -44,16 +44,16 @@
     "gateway"
   ],
   "devDependencies": {
-    "@types/node": "25.9.1",
-    "@vitest/coverage-v8": "4.1.7",
+    "@types/node": "25.9.2",
+    "@vitest/coverage-v8": "4.1.8",
     "typescript": "5.9.3",
     "vitest": "4.1.8"
   },
   "dependencies": {
-    "axios": "1.13.4",
-    "dotenv": "17.2.3",
+    "axios": "1.17.0",
+    "dotenv": "17.4.2",
     "node-llama-cpp": "3.18.1",
     "ollama": "0.6.3",
-    "openai": "6.35.0"
+    "openai": "6.42.0"
   }
 }
